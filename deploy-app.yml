@@ -1,0 +1,44 @@
+---
+- name: Deploy Application on Kubernetes
+  hosts: localhost
+  become: false
+
+  tasks:
+
+    - name: Check if Minikube is running
+      shell: minikube status --format='{{ "{{.Host}}" }}'
+      register: minikube_status
+      changed_when: false
+      failed_when: minikube_status.stdout != "Running"
+
+    - name: Apply Kubernetes manifests
+      shell: kubectl apply -f k8s/
+      args:
+        chdir: "{{ playbook_dir }}"
+      register: apply_output
+
+    - name: Show apply output
+      debug:
+        var: apply_output.stdout
+
+    - name: Wait for pods to start
+      pause:
+        seconds: 10
+
+    - name: Get pods status
+      shell: kubectl get pods
+      register: pods
+      changed_when: false
+
+    - name: Display pods
+      debug:
+        var: pods.stdout
+
+    - name: Get services
+      shell: kubectl get svc
+      register: services
+      changed_when: false
+
+    - name: Display services
+      debug:
+        var: services.stdout
