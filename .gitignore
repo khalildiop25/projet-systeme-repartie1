@@ -1,0 +1,16 @@
+# Binaries
+minikube-linux-amd64
+
+# Logs
+wget-log
+
+# Python
+venv/
+__pycache__/
+
+# Docker
+*.tar
+
+# OS
+.DS_Store
+
