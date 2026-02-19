@@ -7,14 +7,6 @@ pipeline {
         DOCKER_IMAGE_BACKEND = "khalildiop25/backend"
     }
 
-    stages {
-
-        stage('Checkout Code') {
-            steps {
-                git 'https://github.com/khalildiop25/projet-systeme-repartie1.git'
-            }
-        }
-
         stage('Build Docker Images') {
             steps {
                 sh 'docker build -t $DOCKER_IMAGE_FRONTEND:latest ./frontend'
