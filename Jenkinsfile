@@ -7,6 +7,8 @@ pipeline {
         DOCKER_IMAGE_BACKEND = "khalildiop25/backend"
     }
 
+    stages {
+
         stage('Build Docker Images') {
             steps {
                 sh 'docker build -t $DOCKER_IMAGE_FRONTEND:latest ./frontend'
@@ -27,6 +29,8 @@ pipeline {
                 sh 'kubectl apply -f k8s/'
             }
         }
+
     }
 }
+
 
