@@ -2,25 +2,35 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
         DOCKER_IMAGE_FRONTEND = "khalildiop767/frontend"
-        DOCKER_IMAGE_BACKEND = "khalildiop767/backend"
+        DOCKER_IMAGE_BACKEND  = "khalildiop767/backend"
     }
 
     stages {
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE_FRONTEND:latest ./frontend'
-                sh 'docker build -t $DOCKER_IMAGE_BACKEND:latest ./backend'
+                sh '''
+                    docker build -t $DOCKER_IMAGE_FRONTEND:latest ./frontend
+                    docker build -t $DOCKER_IMAGE_BACKEND:latest ./backend
+                '''
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh 'docker push $DOCKER_IMAGE_FRONTEND:latest'
-                sh 'docker push $DOCKER_IMAGE_BACKEND:latest'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push $DOCKER_IMAGE_FRONTEND:latest
+                        docker push $DOCKER_IMAGE_BACKEND:latest
+                        docker logout
+                    '''
+                }
             }
         }
 
@@ -32,5 +42,4 @@ pipeline {
 
     }
 }
-
 
